@@ -105,7 +105,7 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
           color: "white",
           fontSize: window.innerWidth < 600 ? "2rem" : "4rem", // Smaller font on mobile
           fontWeight: "bold",
-          zIndex: 10,
+          zIndex: 11,
           textAlign: "center",
           opacity: 0,
           pointerEvents: "none",
