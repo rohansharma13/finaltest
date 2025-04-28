@@ -31,7 +31,7 @@ const ProductPhotography = () => {
 
     const loader = new GLTFLoader();
     loader.load(
-      "public/photography.glb", // Path relative to public folder
+      "/photography.glb", // Path relative to public folder
       (gltf) => {
         const model = gltf.scene;
         model.rotation.set(0, Math.PI / 2, 0); // Adjust Y rotation to face front
