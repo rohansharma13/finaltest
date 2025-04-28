@@ -56,21 +56,17 @@ const SEO = () => {
     animate();
 
     const handleResize = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      renderer.setSize(width, height);
-      camera.aspect = width / height;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-
-      // Adjust camera position based on screen size (more zoomed out on small screens)
-      if (width < 600) {
-        camera.position.set(0, 1.3, 15); // Closer for mobile devices
-      } else {
-        camera.position.set(0, 1.3, 30); // Default for larger screens
-      }
+      renderer.setSize(window.innerWidth, window.innerHeight);
     };
-
     window.addEventListener("resize", handleResize);
+
+    // IMPORTANT: Allow touch scroll to work
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.style.touchAction = "pan-y"; // allow vertical touch scroll
+    }
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -107,8 +103,19 @@ const SEO = () => {
     return () => {
       if (section) observer.unobserve(section);
     };
+
+
+
+
+
+
+
+    
   }, []);
 
+
+
+  
   return (
     <div
       id="hero-model-container"
@@ -116,7 +123,7 @@ const SEO = () => {
         position: "relative",
         width: "100vw",
         height: "100vh",
-        overflow: "hidden",
+        overflow: "auto",
       }}
     >
       <canvas

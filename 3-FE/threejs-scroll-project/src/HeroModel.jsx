@@ -16,62 +16,61 @@ const HeroModel = () => {
       0.1,
       1000
     );
-    camera.position.set(0, 1, 1.7); // Set the camera position
+    camera.position.set(0, 1, 1.7);
 
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current });
+    const renderer = new THREE.WebGLRenderer({ 
+      canvas: canvasRef.current, 
+      alpha: true,   // 🌟 Allow background transparency if needed
+      antialias: true 
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x242424);
 
-    // Add some light to the scene
-    const light = new THREE.AmbientLight(0xffffff, 1);
-    scene.add(light);
+    canvasRef.current.style.touchAction = "pan-y"; // 🌟 Allow vertical scrolling on touch
 
-    // Load the 3D model
+    scene.add(new THREE.AmbientLight(0xffffff, 1));
+
     const loader = new GLTFLoader();
     loader.load(
-      "/laptop.glb", // Use the path relative to the public folder
+      "/laptop.glb",
       (gltf) => {
-        scene.add(gltf.scene); // Add the model to the scene
+        scene.add(gltf.scene);
       },
       undefined,
-      (error) => {
-        console.error("Error loading the model:", error);
-      }
+      (error) => console.error("Error loading the model:", error)
     );
 
-    // Set up camera controls
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = false; // 🔒 Disable zoom
+    controls.enableZoom = false;
     controls.enablePan = false;
     controls.enableRotate = false;
-    controls.autoRotate = true; // ✅ Enables continuous rotation
+    controls.autoRotate = true;
     controls.autoRotateSpeed = 2.0;
 
-    // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
       controls.update();
       renderer.render(scene, camera);
     };
-
     animate();
 
-    // Resize handler
     const handleResize = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-
-      renderer.setSize(width, height);
-      camera.aspect = width / height;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     };
-
     window.addEventListener("resize", handleResize);
+
+    // IMPORTANT: Allow touch scroll to work
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.style.touchAction = "pan-y"; // allow vertical touch scroll
+    }
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      controls.dispose(); // Clean up controls
-      renderer.dispose(); // Clean up renderer
+      controls.dispose();
+      renderer.dispose();
     };
   }, []);
 
@@ -79,27 +78,19 @@ const HeroModel = () => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // When section is visible
           setShowText(true);
-          setTimeout(() => {
-            setFadeIn(true);
-          }, 500); // delay text fade-in
+          setTimeout(() => setFadeIn(true), 500);
         } else {
-          // When section is not visible
           setFadeIn(false);
-          setTimeout(() => {
-            setShowText(false);
-          }, 500);
+          setTimeout(() => setShowText(false), 500);
         }
       },
-      {
-        threshold: 0.3, // Trigger when at least 30% of the section is visible
-      }
+      { threshold: 0.3 }
     );
-  
+
     const section = document.getElementById("hero-model-container");
     if (section) observer.observe(section);
-  
+
     return () => {
       if (section) observer.unobserve(section);
     };
@@ -112,12 +103,18 @@ const HeroModel = () => {
         position: "relative",
         width: "100vw",
         height: "100vh",
-        overflow: "hidden",
+        overflow: "auto",  // 🌟 Allow scrolling
+        WebkitOverflowScrolling: "touch", // 🌟 Smooth scroll on iOS
       }}
     >
       <canvas
         ref={canvasRef}
-        style={{ display: "block", width: "100%", height: "100%" }}
+        style={{ 
+          display: "block", 
+          width: "100%", 
+          height: "100%", 
+          touchAction: "pan-y" // 🌟 Critical for touch devices!
+        }}
       />
 
       {showText && (
@@ -128,15 +125,16 @@ const HeroModel = () => {
             left: "50%",
             transform: "translate(-50%, -50%)",
             color: "white",
-            fontSize: window.innerWidth < 600 ? "2rem" : "4rem", // Smaller font on mobile
+            fontSize: window.innerWidth < 600 ? "2rem" : "4rem",
             fontWeight: "bold",
             zIndex: 1,
             pointerEvents: "none",
             textAlign: "center",
             opacity: fadeIn ? 1 : 0,
-            transition: "opacity 1s ease-in-out", // smooth fade
-            textShadow:
-              "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
+            transition: "opacity 1s ease-in-out",
+            textShadow: "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
+            padding: "0 1rem",
+            lineHeight: 1.1,
           }}
         >
           WEB DEVELOPMENT

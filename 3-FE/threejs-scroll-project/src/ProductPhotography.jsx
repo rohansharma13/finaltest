@@ -56,21 +56,17 @@ const ProductPhotography = () => {
     animate();
 
     const handleResize = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      renderer.setSize(width, height);
-      camera.aspect = width / height;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-
-      // Adjust camera position based on screen size (zoom closer for smaller screens)
-      if (width < 600) {
-        camera.position.set(0, 1.3, 4); // Closer for mobile
-      } else {
-        camera.position.set(0, 1.3, 7); // Default for larger screens
-      }
+      renderer.setSize(window.innerWidth, window.innerHeight);
     };
-
     window.addEventListener("resize", handleResize);
+
+    // IMPORTANT: Allow touch scroll to work
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.style.touchAction = "pan-y"; // allow vertical touch scroll
+    }
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -116,7 +112,7 @@ const ProductPhotography = () => {
         position: "relative",
         width: "100vw",
         height: "100vh",
-        overflow: "hidden",
+        overflow: "auto",
       }}
     >
       <canvas
@@ -141,6 +137,7 @@ const ProductPhotography = () => {
             transition: "opacity 1s ease-in-out", // smooth fade
             textShadow:
               "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
+              
           }}
         >
           PHOTOGRAPHY

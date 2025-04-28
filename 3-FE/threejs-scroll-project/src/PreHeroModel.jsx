@@ -21,15 +21,16 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       antialias: true,
+      alpha: true, // allow transparent background if needed
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000);
+    renderer.setClearColor(0x000000, 1);
 
     scene.add(new THREE.AmbientLight(0xffffff, 1));
 
     const loader = new GLTFLoader();
     loader.load(
-      "/oldcomputer.glb", // ✅ No need to write `/public/oldcomputer.glb`
+      "/oldcomputer.glb",
       (gltf) => {
         const model = gltf.scene;
         model.scale.set(0.8, 0.8, 0.8);
@@ -58,6 +59,12 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener("resize", handleResize);
+
+    // IMPORTANT: Allow touch scroll to work
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.style.touchAction = "pan-y"; // allow vertical touch scroll
+    }
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -89,10 +96,23 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
   }, []);
 
   return (
-    <div style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
+    <div
+      style={{
+        position: "relative",
+        width: "100vw",
+        height: "100vh",
+        overflow: "auto", // allow scrolling
+        WebkitOverflowScrolling: "touch", // smooth scrolling on iOS
+      }}
+    >
       <canvas
         ref={canvasRef}
-        style={{ display: "block", width: "100%", height: "100%" }}
+        style={{
+          display: "block",
+          width: "100%",
+          height: "100%",
+          touchAction: "pan-y", // very important for mobile touch scroll
+        }}
       />
 
       <div
@@ -103,7 +123,7 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           color: "white",
-          fontSize: window.innerWidth < 600 ? "2rem" : "4rem", // Smaller font on mobile
+          fontSize: window.innerWidth < 600 ? "2rem" : "4rem",
           fontWeight: "bold",
           zIndex: 11,
           textAlign: "center",
@@ -114,7 +134,7 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
           lineHeight: 1.1,
         }}
       >
-        KHAALAS MEDIA
+        aaaaaaaaa
       </div>
     </div>
   );
