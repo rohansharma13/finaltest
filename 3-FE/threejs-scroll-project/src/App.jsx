@@ -28,12 +28,12 @@ const App = () => {
       smooth: true,
       direction: "vertical",
       gestureDirection: "vertical",
-      smoothTouch: true,
+      smoothTouch: false, // <- better for mobile usually
       lerp: 0.03,
     });
-
+  
     lenisRef.current = lenis;
-
+  
     setTimeout(() => {
       window.scrollTo({
         top: 0,
@@ -41,23 +41,27 @@ const App = () => {
       });
       lenis.scrollTo(0);
     }, 50);
-
-    lenis.stop();
-
+  
+    // On desktop, stop until text animation
+    if (window.innerWidth > 768) {
+      lenis.stop();
+    }
+  
     function raf(time) {
       lenis.raf(time);
       ScrollTrigger.update();
       requestAnimationFrame(raf);
     }
-
+  
     requestAnimationFrame(raf);
     lenis.on("scroll", ScrollTrigger.update);
-
+  
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       lenis.destroy();
     };
   }, []);
+  
 
   useEffect(() => {
     if (textAnimationDone) {
