@@ -4,9 +4,11 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import gsap from "gsap";
 
-const PreHeroModel = ({ onTextAnimationComplete }) => {
+const PreHeroModel = ({ loading, onTextAnimationComplete }) => {
   const canvasRef = useRef(null);
   const textRef = useRef(null);
+  const hasAnimatedRef = useRef(false);
+
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -21,7 +23,7 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       antialias: true,
-      alpha: true, // allow transparent background if needed
+      alpha: true,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 1);
@@ -60,10 +62,9 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
     };
     window.addEventListener("resize", handleResize);
 
-    // IMPORTANT: Allow touch scroll to work
     const canvas = canvasRef.current;
     if (canvas) {
-      canvas.style.touchAction = "pan-y"; // allow vertical touch scroll
+      canvas.style.touchAction = "pan-y";
     }
 
     return () => {
@@ -73,27 +74,33 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
     };
   }, []);
 
-  useEffect(() => {
-    const tl = gsap.timeline({
-      onComplete: () => {
-        if (onTextAnimationComplete) onTextAnimationComplete();
-      },
-    });
+useEffect(() => {
+  if (loading !== false || hasAnimatedRef.current) return;
 
-    tl.fromTo(
-      textRef.current,
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 2,
-        ease: "power3.inOut",
-        delay: 0.7,
-      }
-    );
+  hasAnimatedRef.current = true; // Ensure it runs only once
 
-    return () => tl.kill();
-  }, []);
+  const tl = gsap.timeline({
+    onComplete: () => {
+      if (onTextAnimationComplete) onTextAnimationComplete();
+    },
+  });
+
+  tl.fromTo(
+    textRef.current,
+    { opacity: 0, y: 50 },
+    {
+      opacity: 1,
+      y: 0,
+      duration: 2,
+      ease: "power3.inOut",
+      delay: 0.7,
+    }
+  );
+
+  return () => tl.kill();
+}, [loading, onTextAnimationComplete]);
+
+  
 
   return (
     <div
@@ -101,8 +108,8 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
         position: "relative",
         width: "100vw",
         height: "100vh",
-        overflow: "auto", // allow scrolling
-        WebkitOverflowScrolling: "touch", // smooth scrolling on iOS
+        overflow: "auto",
+        WebkitOverflowScrolling: "touch",
       }}
     >
       <canvas
@@ -111,7 +118,7 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
           display: "block",
           width: "100%",
           height: "100%",
-          touchAction: "pan-y", // very important for mobile touch scroll
+          touchAction: "pan-y",
         }}
       />
 
@@ -129,12 +136,13 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
           textAlign: "center",
           opacity: 0,
           pointerEvents: "none",
-          textShadow: "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
+          textShadow:
+            "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
           padding: "0 1rem",
           lineHeight: 1.1,
         }}
       >
-       KHAALAS MEDIA
+        AAAA BBBBB
       </div>
     </div>
   );

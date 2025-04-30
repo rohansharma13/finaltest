@@ -18,11 +18,15 @@ const App = () => {
 
   // Simulating delay for loader
   useEffect(() => {
+    // Disable scrolling while loading
+    document.body.style.overflow = 'hidden';
+    
     setTimeout(() => {
       setLoading(false); // Hide loader after a delay
-    }, 4000); // 3 seconds delay (adjust as needed)
+    }, 6000); // Adjust delay as needed
   }, []);
 
+  // Initialize Lenis scroll smoothness
   useEffect(() => {
     const lenis = new Lenis({
       smooth: true,
@@ -59,8 +63,13 @@ const App = () => {
     };
   }, []);
 
+  // Start scroll animations once the text animation is done
   useEffect(() => {
-    if (textAnimationDone) {
+    if (textAnimationDone && !loading) {
+      // Enable scrolling once the loader is finished
+      document.body.style.overflowX = 'hidden';  // Disable horizontal scroll
+      document.body.style.overflowY = 'auto';
+
       lenisRef.current?.start();
 
       sectionsRef.current.forEach((section, index) => {
@@ -96,7 +105,7 @@ const App = () => {
         }
       });
     }
-  }, [textAnimationDone]);
+  }, [textAnimationDone, loading]);
 
   const sectionStyle = {
     minHeight: "100svh",
@@ -116,7 +125,11 @@ const App = () => {
         ref={(el) => (sectionsRef.current[0] = el)}
         style={{ ...sectionStyle, backgroundColor: "black" }}
       >
-        <PreHeroModel onTextAnimationComplete={() => setTextAnimationDone(true)} />
+       <PreHeroModel
+  loading={loading}
+  onTextAnimationComplete={() => setTextAnimationDone(true)}
+/>
+
       </section>
 
       <section
