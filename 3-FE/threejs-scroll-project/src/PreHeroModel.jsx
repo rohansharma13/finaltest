@@ -134,7 +134,7 @@ const PreHeroModel = ({ onTextAnimationComplete }) => {
           lineHeight: 1.1,
         }}
       >
-        KHAALAS MEDIA
+       KHAALAS MEDIA
       </div>
     </div>
   );

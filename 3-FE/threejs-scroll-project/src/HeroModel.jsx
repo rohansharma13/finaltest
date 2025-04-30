@@ -18,10 +18,10 @@ const HeroModel = () => {
     );
     camera.position.set(0, 1, 1.7);
 
-    const renderer = new THREE.WebGLRenderer({ 
-      canvas: canvasRef.current, 
-      alpha: true,   // 🌟 Allow background transparency if needed
-      antialias: true 
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvasRef.current,
+      alpha: true, // 🌟 Allow background transparency if needed
+      antialias: true,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x242424);
@@ -88,7 +88,7 @@ const HeroModel = () => {
       { threshold: 0.3 }
     );
 
-    const section = document.getElementById("hero-model-container");
+    const section = canvasRef.current?.parentElement;
     if (section) observer.observe(section);
 
     return () => {
@@ -103,17 +103,17 @@ const HeroModel = () => {
         position: "relative",
         width: "100vw",
         height: "100vh",
-        overflow: "auto",  // 🌟 Allow scrolling
+        overflow: "auto", // 🌟 Allow scrolling
         WebkitOverflowScrolling: "touch", // 🌟 Smooth scroll on iOS
       }}
     >
       <canvas
         ref={canvasRef}
-        style={{ 
-          display: "block", 
-          width: "100%", 
-          height: "100%", 
-          touchAction: "pan-y" // 🌟 Critical for touch devices!
+        style={{
+          display: "block",
+          width: "100%",
+          height: "100%",
+          touchAction: "pan-y", // 🌟 Critical for touch devices!
         }}
       />
 
@@ -132,7 +132,8 @@ const HeroModel = () => {
             textAlign: "center",
             opacity: fadeIn ? 1 : 0,
             transition: "opacity 1s ease-in-out",
-            textShadow: "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
+            textShadow:
+              "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
             padding: "0 1rem",
             lineHeight: 1.1,
           }}

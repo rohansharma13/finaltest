@@ -97,7 +97,8 @@ const ProductPhotography = () => {
       }
     );
 
-    const section = document.getElementById("hero-model-container");
+    const section = canvasRef.current?.parentElement;
+
     if (section) observer.observe(section);
 
     return () => {

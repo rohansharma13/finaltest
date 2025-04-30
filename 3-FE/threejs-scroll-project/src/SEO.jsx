@@ -79,43 +79,25 @@ const SEO = () => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // When section is visible
           setShowText(true);
-          setTimeout(() => {
-            setFadeIn(true);
-          }, 500); // delay text fade-in
+          setTimeout(() => setFadeIn(true), 100); // fade in slightly quicker
         } else {
-          // When section is not visible
           setFadeIn(false);
-          setTimeout(() => {
-            setShowText(false);
-          }, 500);
+          setTimeout(() => setShowText(false), 500); // fade out after transition
         }
       },
-      {
-        threshold: 0.3, // Trigger when at least 30% of the section is visible
-      }
+      { threshold: 0.5 }
     );
-
-    const section = document.getElementById("hero-model-container");
+  
+    const section = canvasRef.current?.parentElement; // Observe the section holding the canvas
     if (section) observer.observe(section);
-
+  
     return () => {
       if (section) observer.unobserve(section);
     };
-
-
-
-
-
-
-
-    
   }, []);
-
-
-
   
+
   return (
     <div
       id="hero-model-container"
