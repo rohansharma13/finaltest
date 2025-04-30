@@ -142,7 +142,7 @@ useEffect(() => {
           lineHeight: 1.1,
         }}
       >
-        AAAA BBBBB
+        KHAALAS MEDIA
       </div>
     </div>
   );
