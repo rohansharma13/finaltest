@@ -5,6 +5,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 const Loader = ({ onModelLoaded }) => {
   const canvasRef = useRef(null);
   const ringRefs = useRef([]);
+  const loadingTextRef = useRef(null);
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -89,6 +90,14 @@ const Loader = ({ onModelLoaded }) => {
               }
             });
 
+            if (loadingTextRef.current) {
+              loadingTextRef.current.style.transform = `translate(-50%, -50%) scale(${
+                1 + progress
+              })`;
+
+              loadingTextRef.current.style.opacity = `${1 - progress}`;
+            }
+
             requestAnimationFrame(zoomIn);
           }
         };
@@ -171,11 +180,13 @@ const Loader = ({ onModelLoaded }) => {
         }}
       />
       <div
+        ref={loadingTextRef}
         style={{
           position: "absolute",
-          bottom: "5%",
+          top: "55%",
           left: "50%",
-          transform: "translateX(-50%)",
+          right: "30%",
+          transform: "translate(-50%, -50%)",
           color: "white",
           fontSize: "clamp(1rem, 4vw, 2rem)",
           fontFamily: "sans-serif",
@@ -183,7 +194,7 @@ const Loader = ({ onModelLoaded }) => {
           padding: "0 1rem",
         }}
       >
-        Loading...
+        LOADING...
       </div>
     </div>
   );

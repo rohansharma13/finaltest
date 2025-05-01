@@ -132,7 +132,7 @@ const SEO = () => {
               "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
           }}
         >
-          SEO
+         SEO SERVICES
         </div>
       )}
     </div>
