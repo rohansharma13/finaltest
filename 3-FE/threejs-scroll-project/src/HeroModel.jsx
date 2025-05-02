@@ -138,7 +138,7 @@ const HeroModel = () => {
             lineHeight: 1.1,
           }}
         >
-          WEB DEVELOPMENT
+          PERFORMANCE
         </div>
       )}
     </div>

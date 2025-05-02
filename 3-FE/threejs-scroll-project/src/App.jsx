@@ -132,19 +132,24 @@ const App = () => {
 
       </section>
 
+
       <section
         ref={(el) => (sectionsRef.current[1] = el)}
+        style={{ ...sectionStyle, backgroundColor: "#93C572" }}
+      >
+        <SEO />
+      </section>
+
+
+
+      <section
+        ref={(el) => (sectionsRef.current[2] = el)}
         style={{ ...sectionStyle, backgroundColor: "black" }}
       >
         <HeroModel />
       </section>
 
-      <section
-        ref={(el) => (sectionsRef.current[2] = el)}
-        style={{ ...sectionStyle, backgroundColor: "#93C572" }}
-      >
-        <SEO />
-      </section>
+  
 
       <section
         ref={(el) => (sectionsRef.current[3] = el)}

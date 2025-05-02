@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const SEO = () => {
   const canvasRef = useRef(null);
@@ -16,7 +20,7 @@ const SEO = () => {
       0.1,
       1000
     );
-    camera.position.set(0, 1.3, 30); // Default camera position
+    camera.position.set(0, 1.3, 30);
 
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
@@ -29,13 +33,47 @@ const SEO = () => {
     const light = new THREE.AmbientLight(0xffffff, 2);
     scene.add(light);
 
+    const meshParts = []; // To store mesh info for animation
+
     const loader = new GLTFLoader();
     loader.load(
-      "/seo2.glb", // Use the path relative to the public folder
+      "/seo2.glb",
       (gltf) => {
         const model = gltf.scene;
-        model.rotation.set(0, 1.3, 0); // Faces front
+        model.rotation.set(0, 1.3, 0);
         scene.add(model);
+
+        // Traverse and prepare each mesh for disassemble/assemble
+        model.traverse((child) => {
+          if (child.isMesh) {
+            const initialPosition = child.position.clone(); // Save original position
+
+            // Offset the mesh parts to a scattered position
+            child.position.x += (Math.random() - 0.5) * 10;
+            child.position.y += (Math.random() - 0.5) * 10;
+            child.position.z += (Math.random() - 0.5) * 10;
+
+            // Store info for GSAP animation
+            meshParts.push({ mesh: child, initialPosition });
+          }
+        });
+
+        // Animate each part back to its original position on scroll
+
+        meshParts.forEach(({ mesh, initialPosition }) => {
+          gsap.to(mesh.position, {
+            x: initialPosition.x,
+            y: initialPosition.y,
+            z: initialPosition.z,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: canvasRef.current,
+              start: "top bottom",
+              end: "+=150%", // Much longer scroll distance = slower
+              scrub: true,
+            },
+          });
+        });
       },
       undefined,
       (error) => {
@@ -62,16 +100,16 @@ const SEO = () => {
     };
     window.addEventListener("resize", handleResize);
 
-    // IMPORTANT: Allow touch scroll to work
     const canvas = canvasRef.current;
     if (canvas) {
-      canvas.style.touchAction = "pan-y"; // allow vertical touch scroll
+      canvas.style.touchAction = "pan-y";
     }
 
     return () => {
       window.removeEventListener("resize", handleResize);
       controls.dispose();
       renderer.dispose();
+      ScrollTrigger.getAll().forEach((st) => st.kill()); // Clean up scroll triggers
     };
   }, []);
 
@@ -80,23 +118,22 @@ const SEO = () => {
       ([entry]) => {
         if (entry.isIntersecting) {
           setShowText(true);
-          setTimeout(() => setFadeIn(true), 100); // fade in slightly quicker
+          setTimeout(() => setFadeIn(true), 100);
         } else {
           setFadeIn(false);
-          setTimeout(() => setShowText(false), 500); // fade out after transition
+          setTimeout(() => setShowText(false), 500);
         }
       },
       { threshold: 0.5 }
     );
-  
-    const section = canvasRef.current?.parentElement; // Observe the section holding the canvas
+
+    const section = canvasRef.current?.parentElement;
     if (section) observer.observe(section);
-  
+
     return () => {
       if (section) observer.unobserve(section);
     };
   }, []);
-  
 
   return (
     <div
@@ -121,18 +158,18 @@ const SEO = () => {
             left: "50%",
             transform: "translate(-50%, -50%)",
             color: "white",
-            fontSize: window.innerWidth < 600 ? "2rem" : "4rem", // Smaller font on mobile
+            fontSize: window.innerWidth < 600 ? "2rem" : "4rem",
             fontWeight: "bold",
             zIndex: 1,
             pointerEvents: "none",
             textAlign: "center",
             opacity: fadeIn ? 1 : 0,
-            transition: "opacity 1s ease-in-out", // smooth fade
+            transition: "opacity 1s ease-in-out",
             textShadow:
               "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
           }}
         >
-         SEO SERVICES
+          SMOOTH SCROLL
         </div>
       )}
     </div>

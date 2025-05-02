@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import gsap from "gsap";
 
 const ProductPhotography = () => {
   const canvasRef = useRef(null);
   const [showText, setShowText] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
+  const partsRef = useRef([]); // To store parts info
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -16,7 +18,7 @@ const ProductPhotography = () => {
       0.1,
       1000
     );
-    camera.position.set(0, 1.3, 7); // Default camera position
+    camera.position.set(0, 1.3, 7);
 
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
@@ -24,18 +26,40 @@ const ProductPhotography = () => {
       antialias: true,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 0); // Transparent background
+    renderer.setClearColor(0x000000, 0);
 
     const light = new THREE.AmbientLight(0xffffff, 2);
     scene.add(light);
 
     const loader = new GLTFLoader();
     loader.load(
-      "/photography.glb", // Path relative to public folder
+      "/photography.glb",
       (gltf) => {
         const model = gltf.scene;
-        model.rotation.set(0, Math.PI / 2, 0); // Adjust Y rotation to face front
+        model.rotation.set(0, Math.PI / 2, 0);
         scene.add(model);
+
+        // Initialize parts
+        const parts = [];
+        model.traverse((child) => {
+          if (child.isMesh) {
+            parts.push({
+              mesh: child,
+              originalPosition: child.position.clone(),
+              originalScale: child.scale.clone(),
+            });
+
+            // Scatter: move them out of view at start
+            child.position.set(
+              (Math.random() - 0.5) * 10,
+              (Math.random() - 0.5) * 10,
+              (Math.random() - 0.5) * 10
+            );
+            child.scale.set(0.1, 0.1, 0.1);
+          }
+        });
+
+        partsRef.current = parts;
       },
       undefined,
       (error) => {
@@ -62,10 +86,9 @@ const ProductPhotography = () => {
     };
     window.addEventListener("resize", handleResize);
 
-    // IMPORTANT: Allow touch scroll to work
     const canvas = canvasRef.current;
     if (canvas) {
-      canvas.style.touchAction = "pan-y"; // allow vertical touch scroll
+      canvas.style.touchAction = "pan-y";
     }
 
     return () => {
@@ -79,26 +102,59 @@ const ProductPhotography = () => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // When section is visible
           setShowText(true);
           setTimeout(() => {
             setFadeIn(true);
-          }, 500); // delay text fade-in
+          }, 500);
+
+          // Animate assembly
+          partsRef.current.forEach(({ mesh, originalPosition, originalScale }) => {
+            gsap.to(mesh.position, {
+              x: originalPosition.x,
+              y: originalPosition.y,
+              z: originalPosition.z,
+              duration: 1.5,
+              ease: "power2.out",
+            });
+            gsap.to(mesh.scale, {
+              x: originalScale.x,
+              y: originalScale.y,
+              z: originalScale.z,
+              duration: 1.5,
+              ease: "power2.out",
+            });
+          });
         } else {
-          // When section is not visible
           setFadeIn(false);
           setTimeout(() => {
             setShowText(false);
           }, 500);
+
+          // Optionally disassemble again
+          partsRef.current.forEach(({ mesh }) => {
+            gsap.to(mesh.position, {
+              x: (Math.random() - 0.5) * 10,
+              y: (Math.random() - 0.5) * 10,
+              z: (Math.random() - 0.5) * 10,
+              duration: 1.5,
+              ease: "power2.in",
+            });
+            gsap.to(mesh.scale, {
+              x: 0.1,
+              y: 0.1,
+              z: 0.1,
+              duration: 1.5,
+              ease: "power2.in",
+            });
+          });
         }
       },
       {
-        threshold: 0.3, // Trigger when at least 30% of the section is visible
+        threshold: 0.3,
       }
     );
 
     const section = canvasRef.current?.parentElement;
-
     if (section) observer.observe(section);
 
     return () => {
@@ -129,19 +185,18 @@ const ProductPhotography = () => {
             left: "50%",
             transform: "translate(-50%, -50%)",
             color: "white",
-            fontSize: window.innerWidth < 600 ? "2rem" : "4rem", // Adjust font size for mobile
+            fontSize: window.innerWidth < 600 ? "2rem" : "4rem",
             fontWeight: "bold",
             zIndex: 1,
             pointerEvents: "none",
             textAlign: "center",
             opacity: fadeIn ? 1 : 0,
-            transition: "opacity 1s ease-in-out", // smooth fade
+            transition: "opacity 1s ease-in-out",
             textShadow:
               "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
-              
           }}
         >
-          PHOTOGRAPHY
+          TEXT STYLES
         </div>
       )}
     </div>

@@ -142,7 +142,7 @@ useEffect(() => {
           lineHeight: 1.1,
         }}
       >
-        KHAALAS MEDIA
+        TESTING ANIMATIONS
       </div>
     </div>
   );
